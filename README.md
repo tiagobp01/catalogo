@@ -12,7 +12,7 @@ Sistema de catálogo virtual desenvolvido para a Unicsul utilizando Spring Boot.
 
 1. **Clone o repositório**
    ```bash
-   git clone [URL_DO_REPOSITORIO]
+   git clone https://github.com/tiagobp01/catalogo
    cd catalogo
    ```
 
@@ -55,10 +55,10 @@ src/
 ├── main/
 │   ├── java/br/com/unicsul/catalogo/
 │   │   ├── config/         # Configurações do Spring
+│   │   ├────── security/       # Configurações de segurança   
 │   │   ├── controller/     # Controladores REST
 │   │   ├── model/          # Entidades JPA
 │   │   ├── repository/     # Repositórios Spring Data
-│   │   ├── security/       # Configurações de segurança
 │   │   ├── service/        # Lógica de negócios
 │   │   └── CatalogoApplication.java
 │   └── resources/
