@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .dashboard-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #3498db;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .card-text {
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+        .card-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .card-link:hover {
+            text-decoration: underline;
+        }
+        .welcome-section {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="welcome-section">
+            <h1 th:text="${pageTitle}">Painel Administrativo</h1>
+            <p class="lead">Gerencie todo o conteúdo do sistema de forma simples e eficiente.</p>
+        </div>
+
+        <div class="row">
+            <!-- Contatos -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-address-book"></i>
+                        </div>
+                        <h5 class="card-title">Contatos</h5>
+                        <p class="card-text">Vejas as mensagens enviadas pelo formulário de contatos.</p>
+                        <a th:href="@{/admin/contatos}" class="card-link">
+                            Acessar <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Autores -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <h5 class="card-title">Autores</h5>
+                        <p class="card-text">Gerencie os autores dos conteúdos.</p>
+                        <a th:href="@{/admin/autores}" class="card-link">
+                            Acessar <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorias -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <h5 class="card-title">Categorias</h5>
+                        <p class="card-text">Gerencie as categorias dos produtos.</p>
+                        <a th:href="@{/admin/categorias}" class="card-link">
+                            Acessar <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diretores -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <h5 class="card-title">Diretores</h5>
+                        <p class="card-text">Gerencie os diretores dos filmes.</p>
+                        <a th:href="@{/admin/diretores}" class="card-link">
+                            Acessar <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produtos -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <h5 class="card-title">Produtos</h5>
+                        <p class="card-text">Gerencie todos os produtos do catálogo.</p>
+                        <a th:href="@{/admin/produtos}" class="card-link">
+                            Acessar <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatórios -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h5 class="card-title">Relatórios</h5>
+                        <p class="card-text">Acesse relatórios e análises.</p>
+                        <a th:href="@{/admin/relatorios}" class="card-link">
+                            Acessar <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

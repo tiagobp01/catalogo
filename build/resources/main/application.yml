@@ -1,0 +1,88 @@
+spring:
+  application:
+    name: catalogo
+  
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:h2:mem:catalogo;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    initialization-mode: always
+
+  # H2 Console Configuration
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+        trace: false
+  # SQL initialization
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none  # Desativa a geração automática do schema
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true  # Garante que o data.sql seja executado após o schema.sql
+  
+
+
+  # Thymeleaf Configuration
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+    servlet:
+      content-type: text/html
+
+  # Security Configuration
+#  security:
+#    user:
+#      name: admin
+#      password: admin
+#      roles: ADMIN
+
+# Mensagens de validação
+messages:
+  validation:
+    notblank: "O campo {0} é obrigatório"
+    size: "O campo {0} deve ter entre {2} e {1} caracteres"
+    email: "Por favor, informe um e-mail válido"
+    pattern: "O formato do campo {0} é inválido"
+    positive: "O campo {0} deve ser um número positivo"
+    notnull: "O campo {0} é obrigatório"
+    past: "A data deve estar no passado"
+    future: "A data deve estar no futuro"
+
+# Configurações do servidor
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  port: 8080
+
+# Configuração de logging
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+    br:
+      com:
+        unicsul:
+          catalogo: DEBUG

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/categorias/base}">
+
+<head>
+    <title th:text="${pageTitle} + ' | Admin'">Formulário de Categoria | Admin</title>
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .icon-preview {
+            font-size: 24px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div layout:fragment="conteudo">
+        <div class="card form-container">
+            <div class="card-body">
+                <h5 class="card-title mb-4" th:text="${pageTitle}">Formulário de Categoria</h5>
+                
+                <form th:action="@{/admin/categorias/salvar}" th:object="${categoria}" method="post" class="needs-validation" novalidate>
+                    <input type="hidden" th:field="*{id}" />
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nome" th:field="*{nome}" 
+                                       required minlength="3" maxlength="255"
+                                       th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'"
+                                       placeholder="Digite o nome da categoria">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">
+                                    O nome é obrigatório e deve ter entre 3 e 255 caracteres.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="icone" class="form-label">Ícone</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="icone" th:field="*{icone}" 
+                                           maxlength="50"
+                                           placeholder="Ex: fas fa-tag"
+                                           th:classappend="${#fields.hasErrors('icone')} ? 'is-invalid'"
+                                           aria-describedby="iconeHelp">
+                                    <span class="input-group-text">
+                                        <i id="iconePreview" class="fas fa-tag"></i>
+                                    </span>
+                                </div>
+                                <div id="iconeHelp" class="form-text">
+                                    Use classes do <a href="https://fontawesome.com/icons" target="_blank">Font Awesome</a> (opcional)
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('icone')}" th:errors="*{icone}">
+                                    O ícone não pode ter mais que 50 caracteres.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="descricao" th:field="*{descricao}" 
+                                 rows="4" maxlength="255"
+                                 placeholder="Digite uma descrição para a categoria"
+                                 th:classappend="${#fields.hasErrors('descricao')} ? 'is-invalid'"></textarea>
+                        <div class="form-text">
+                            <span id="contador">0</span>/255 caracteres
+                        </div>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}">
+                            A descrição não pode ter mais que 255 caracteres.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="ativo" th:field="*{ativo}">
+                            <label class="form-check-label" for="ativo">Ativo</label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/admin/categorias}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Voltar
+                        </a>
+                        <div>
+                            <a th:href="@{/admin/categorias}" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                // Validação do formulário
+                var forms = document.querySelectorAll('.needs-validation');
+                Array.prototype.slice.call(forms).forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+                
+                // Contador de caracteres para a descrição
+                var descricao = document.getElementById('descricao');
+                var contador = document.getElementById('contador');
+                
+                if (descricao && contador) {
+                    // Atualiza o contador ao carregar a página
+                    contador.textContent = descricao.value ? descricao.value.length : 0;
+                    
+                    // Atualiza o contador ao digitar
+                    descricao.addEventListener('input', function() {
+                        contador.textContent = this.value.length;
+                    });
+                }
+                
+                // Preview do ícone
+                var iconeInput = document.getElementById('icone');
+                var iconePreview = document.getElementById('iconePreview');
+                
+                if (iconeInput && iconePreview) {
+                    // Atualiza o preview ao carregar a página
+                    if (iconeInput.value) {
+                        iconePreview.className = iconeInput.value;
+                    }
+                    
+                    // Atualiza o preview ao digitar
+                    iconeInput.addEventListener('input', function() {
+                        if (this.value) {
+                            iconePreview.className = this.value;
+                        } else {
+                            iconePreview.className = 'fas fa-tag';
+                        }
+                    });
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

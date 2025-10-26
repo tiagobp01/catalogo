@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+    <div th:fragment="messages">
+        <!-- Mensagens de sucesso -->
+        <div th:if="${session.successMessage != null}" class="alert alert-success">
+            <span th:text="${session.successMessage}"></span>
+            <span th:remove="tag" th:with="${session.remove('successMessage')}"></span>
+        </div>
+        
+        <!-- Mensagens de erro -->
+        <div th:if="${session.errorMessage != null}" class="alert alert-danger">
+            <span th:text="${session.errorMessage}"></span>
+            <span th:remove="tag" th:with="${session.remove('errorMessage')}"></span>
+        </div>
+        
+        <!-- Mensagens de validação (apenas em contexto de formulário) -->
+        <div th:if="${#ctx.containsVariable('fields') and #fields != null and #fields.hasErrors('*')}" class="alert alert-danger">
+            <ul class="mb-0">
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

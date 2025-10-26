@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+<head>
+    <title th:text="${pageTitle}">Detalhes do Produto</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container py-5">
+            <!-- Botão Voltar -->
+            <a th:href="${'javascript:history.back()'}" class="btn btn-outline-secondary mb-4">
+                <i class="fas fa-arrow-left me-1"></i> Voltar
+            </a>
+
+            <!-- Card do Produto -->
+            <div class="card">
+                <div class="row g-0">
+                    <!-- Imagem do Produto -->
+                    <div class="col-md-6 p-4 d-flex align-items-center justify-content-center" style="background-color: #f8f9fa;">
+                        <div class="text-center">
+                            <div th:if="${produto.foto != null && !produto.foto.isEmpty()}" class="mb-3">
+                                <img th:src="${produto.foto.startsWith('data:image/') ? produto.foto : ('data:image/png;base64,' + produto.foto)}"
+                                     class="img-fluid rounded" 
+                                     style="max-height: 400px; width: auto;"
+                                     alt="Imagem do produto"
+                                     onerror="this.onerror=null; this.src='/images/placeholder.png'" />
+                            </div>
+                            <div th:unless="${produto.foto != null && !produto.foto.isEmpty()}" class="text-center">
+                                <img src="/images/placeholder.png" 
+                                     class="img-fluid rounded" 
+                                     style="max-height: 400px; width: auto;"
+                                     alt="Imagem não disponível" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detalhes do Produto -->
+                    <div class="col-md-6">
+                        <div class="card-body p-4">
+                            <h2 class="card-title mb-3" th:text="${produto.nome}">Nome do Produto</h2>
+                            
+                            <!-- Informações do Produto -->
+                            <div class="mb-4">
+                                <p class="mb-1" th:if="${produto.categoria != null}">
+                                    <strong>Categoria:</strong> 
+                                    <span th:text="${produto.categoria.nome}">Categoria</span>
+                                </p>
+                                <p class="mb-1" th:if="${produto.autor != null}">
+                                    <strong>Autor(a):</strong>
+                                    <span th:text="${produto.autor.nome}">Autor</span>
+                                </p>
+                                <p class="mb-1" th:if="${produto.diretor != null}">
+                                    <strong>Diretor(a):</strong>
+                                    <span th:text="${produto.diretor.nome}">Diretor</span>
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Data de Lançamento:</strong>
+                                    <span th:if="${produto.dataLancamento != null}" th:text="${#temporals.format(produto.dataLancamento, 'dd/MM/yyyy')}">--/--/----</span>
+                                    <span th:unless="${produto.dataLancamento != null}">Não informada</span>
+                                </p>
+                            </div>
+
+                            <!-- Preço -->
+                            <div class="mb-4">
+                                <h3 class="text-primary fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 2, 'POINT')}">R$ 0,00</h3>
+                            </div>
+
+                            <!-- Descrição -->
+                            <div class="mb-4">
+                                <h5 class="mb-3">Descrição</h5>
+                                <p class="card-text" th:if="${produto.descricao != null && !produto.descricao.isEmpty()}" th:text="${produto.descricao}">
+                                    Descrição detalhada do produto aqui.
+                                </p>
+                                <p class="text-muted" th:unless="${produto.descricao != null && !produto.descricao.isEmpty()}">
+                                    Nenhuma descrição disponível para este produto.
+                                </p>
+                            </div>
+
+                            <!-- Informações Adicionais -->
+                            <div class="border-top pt-3">
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <p class="mb-1"><strong>Data de Cadastro:</strong></p>
+                                        <p class="text-muted" th:text="${#temporals.format(produto.dataCriacao, 'dd/MM/yyyy HH:mm')}">--/--/----</p>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <p class="mb-1"><strong>Última Atualização:</strong></p>
+                                        <p class="text-muted" th:text="${#temporals.format(produto.dataAtualizacao, 'dd/MM/yyyy HH:mm')}">--/--/----</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botões de Ação -->
+                            <div class="d-grid gap-2 d-md-flex mt-4">
+                                <a th:href="${'javascript:history.back()'}" class="btn btn-outline-secondary me-md-2">
+                                    <i class="fas fa-arrow-left me-1"></i> Voltar
+                                </a>
+                                <a th:href="@{/}" class="btn btn-outline-primary">
+                                    <i class="fas fa-home me-1"></i> Página Inicial
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produtos Relacionados (opcional) -->
+            <div class="mt-5" th:if="${produtosRelacionados != null && !produtosRelacionados.isEmpty()}">
+                <h4 class="mb-4">Produtos Relacionados</h4>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    <div class="col" th:each="produtoRel : ${produtosRelacionados}">
+                        <div class="card h-100">
+                            <a th:href="@{/produto/detalhes/__${produtoRel.id}__}" class="text-decoration-none text-dark">
+                                <div th:if="${produtoRel.foto != null && !produtoRel.foto.isEmpty()}" class="card-img-container" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                    <img th:src="${produtoRel.foto.startsWith('data:image/') ? produtoRel.foto : ('data:image/png;base64,' + produtoRel.foto)}"
+                                         class="img-fluid" alt="Imagem do produto"
+                                         style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                                         onerror="this.onerror=null; this.src='/images/placeholder.png'" />
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${produtoRel.nome}">Nome do Produto</h5>
+                                    <p class="card-text text-primary fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(produtoRel.preco, 1, 2, 'POINT')}">R$ 0,00</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            // Scripts específicos para esta página podem ser adicionados aqui
+            document.addEventListener('DOMContentLoaded', function() {
+                // Adicione scripts JS aqui, se necessário
+            });
+        </script>
+    </th:block>
+</body>
+</html>

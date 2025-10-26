@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/autores/base}">
+
+<head>
+    <title>Lista de Autores | Admin</title>
+</head>
+
+<body>
+    <div layout:fragment="conteudo">
+        <!-- Filtros e busca -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/admin/autores}" method="get" class="row g-3">
+                    <div class="col-md-8">
+                        <input type="text" name="search" th:value="${searchTerm}" class="form-control" 
+                               placeholder="Buscar por nome ou descrição...">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a th:href="@{/admin/autores}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-sync-alt"></i> Limpar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabela de autores -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <a th:with="direction=${sortField == 'nome' ? (sortDirection == 'asc' ? 'desc' : 'asc') : 'asc'}"
+                                       th:href="@{/admin/autores(size=${autores.size}, page=0, sort='nome,' + ${direction}, search=${searchTerm})}">
+                                        Nome
+                                        <i th:if="${sortField == 'nome'}" 
+                                           th:class="${sortDirection == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></i>
+                                        <i th:unless="${sortField == 'nome'}" class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>Descrição</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${autores.empty}">
+                                <td colspan="3" class="text-center">Nenhum autor encontrado.</td>
+                            </tr>
+                            <tr th:each="autor : ${autores}">
+                                <td th:text="${autor.nome}">Nome do Autor</td>
+                                <td>
+                                    <span th:if="${#strings.length(autor.descricao) > 50}" 
+                                          th:attr="data-bs-toggle='tooltip'" 
+                                          th:data-bs-placement="top" 
+                                          th:title="${autor.descricao}">
+                                        <span th:text="${#strings.abbreviate(autor.descricao, 50)}">Descrição resumida...</span>
+                                    </span>
+                                    <span th:unless="${#strings.length(autor.descricao) > 50}" th:text="${autor.descricao}">
+                                        Descrição
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/admin/autores/editar/} + ${autor.id}" 
+                                       class="btn btn-sm btn-outline-primary me-1" 
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger btn-excluir" 
+                                            th:data-id="${autor.id}"
+                                            th:data-nome="${autor.nome}"
+                                            title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Paginação -->
+                <div th:if="${autores.totalPages > 0}" class="mt-3">
+                    <nav aria-label="Navegação de páginas">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${autores.first} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}"
+                                   th:href="@{/admin/autores(size=${autores.size}, page=0, sort=${sortParam}, search=${searchTerm})}">
+                                    Primeira
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${autores.first} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}, prevPage=${autores.number - 1}"
+                                   th:href="@{/admin/autores(size=${autores.size}, page=${prevPage}, sort=${sortParam}, search=${searchTerm})}">
+                                    Anterior
+                                </a>
+                            </li>
+                            
+                            <li th:each="page : ${#numbers.sequence(0, autores.totalPages - 1)}" 
+                                class="page-item" 
+                                th:classappend="${page == autores.number} ? 'active'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}"
+                                   th:href="@{/admin/autores(size=${autores.size}, page=${page}, sort=${sortParam}, search=${searchTerm})}"
+                                   th:text="${page + 1}">1</a>
+                            </li>
+                            
+                            <li class="page-item" th:classappend="${autores.last} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}, nextPage=${autores.number + 1}"
+                                   th:href="@{/admin/autores(size=${autores.size}, page=${nextPage}, sort=${sortParam}, search=${searchTerm})}">
+                                    Próxima
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${autores.last} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}, lastPage=${autores.totalPages - 1}"
+                                   th:href="@{/admin/autores(size=${autores.size}, page=${lastPage}, sort=${sortParam}, search=${searchTerm})}">
+                                    Última
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de confirmação de exclusão -->
+        <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="modalExcluirLabel">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Tem certeza que deseja excluir o autor <strong id="nomeAutor"></strong>?</p>
+                        <p class="text-muted">Esta ação não pode ser desfeita.</p>
+                        <div id="produtosAssociados" class="alert alert-warning d-none">
+                            <strong>Atenção!</strong> Este autor está associado a produtos e não pode ser excluído.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form id="formExcluir" method="post" action="#">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn btn-danger" id="btnConfirmarExcluir">Excluir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script th:inline="javascript">
+            // Função para preparar a exclusão
+            function prepararExclusao(button) {
+                const id = button.getAttribute('data-id');
+                const nome = button.getAttribute('data-nome');
+                
+                // Limpa mensagens anteriores
+                document.getElementById('produtosAssociados').classList.add('d-none');
+                document.getElementById('btnConfirmarExcluir').disabled = false;
+                
+                // Define o nome do autor no modal
+                document.getElementById('nomeAutor').textContent = nome;
+                
+                // Define a ação do formulário
+                document.getElementById('formExcluir').action = '/admin/autores/excluir/' + id;
+                
+                // Verifica se existem produtos associados
+                fetch('/admin/autores/verificar-produtos/' + id)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.temProdutos) {
+                            document.getElementById('produtosAssociados').classList.remove('d-none');
+                            document.getElementById('btnConfirmarExcluir').disabled = true;
+                        }
+                    });
+                
+                // Abre o modal
+                new bootstrap.Modal(document.getElementById('modalExcluir')).show();
+            }
+            
+            // Inicializa tooltips e configura botões de exclusão quando o DOM estiver pronto
+            document.addEventListener('DOMContentLoaded', function() {
+                // Inicializa tooltips
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+
+                // Adiciona evento de clique aos botões de exclusão
+                document.querySelectorAll('.btn-excluir').forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        prepararExclusao(this);
+                    });
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>

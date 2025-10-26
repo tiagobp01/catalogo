@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/produtos/base}">
+
+<head>
+    <title>Lista de Produtos - Painel Administrativo</title>
+</head>
+
+<body>
+    <div layout:fragment="conteudo">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Gerenciar Produtos</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <a th:href="@{/admin/produtos/novo}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus"></i> Novo Produto
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-filter"></i> Filtros
+            </div>
+            <div class="card-body">
+                <form th:action="@{/admin/produtos}" method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Nome do Produto</label>
+                        <input type="text" class="form-control" id="search" name="search" th:value="${search}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="categoriaId" class="form-label">Categoria</label>
+                        <select class="form-select select2" id="categoriaId" name="categoriaId">
+                            <option value="">Todas as categorias</option>
+                            <option th:each="categoria : ${categorias}" 
+                                    th:value="${categoria.id}" 
+                                    th:text="${categoria.nome}"
+                                    th:selected="${categoriaId != null && categoriaId == categoria.id}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="autorId" class="form-label">Autor</label>
+                        <select class="form-select select2" id="autorId" name="autorId">
+                            <option value="">Todos os autores</option>
+                            <option th:each="autor : ${autores}" 
+                                    th:value="${autor.id}" 
+                                    th:text="${autor.nome}"
+                                    th:selected="${autorId != null && autorId == autor.id}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="diretorId" class="form-label">Diretor</label>
+                        <select class="form-select select2" id="diretorId" name="diretorId">
+                            <option value="">Todos os diretores</option>
+                            <option th:each="diretor : ${diretores}" 
+                                    th:value="${diretor.id}" 
+                                    th:text="${diretor.nome}"
+                                    th:selected="${diretorId != null && diretorId == diretor.id}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Filtrar
+                        </button>
+                        <a th:href="@{/admin/produtos}" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> Limpar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabela de Produtos -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Autor</th>
+                                <th>Diretor</th>
+                                <th>Preço</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="produto : ${produtos}">
+                                <td th:text="${produto.id}"></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img th:if="${produto.foto != null}" 
+                                             th:src=" ${produto.foto}"
+                                             class="rounded me-2" 
+                                             width="40" 
+                                             height="40" 
+                                             alt="Foto do produto">
+                                        <span th:text="${produto.nome}"></span>
+                                    </div>
+                                </td>
+                                <td th:text="${produto.categoria.nome}"></td>
+                                <td th:text="${produto.autor.nome}"></td>
+                                <td th:text="${produto.diretor.nome}"></td>
+                                <td th:text="${#numbers.formatDecimal(produto.preco, 1, 2, 'POINT')}"></td>
+                                <td>
+                                    <span th:class="${produto.ativo} ? 'badge bg-success' : 'badge bg-secondary'"
+                                          th:text="${produto.ativo} ? 'Ativo' : 'Inativo'">
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{/admin/produtos/editar/{id}(id=${produto.id})}" 
+                                           class="btn btn-primary" 
+                                           title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger btn-excluir"
+                                                th:data-id="${produto.id}"
+                                                th:data-nome="${produto.nome}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${produtos.isEmpty()}">
+                                <td colspan="8" class="text-center">Nenhum produto encontrado</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginação -->
+                <div th:if="${produtos.totalPages > 1}" class="mt-3">
+                    <nav aria-label="Navegação de páginas">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${produtos.number == 0} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:href="@{/admin/produtos(page=0,size=${produtos.size},sort=${sort},search=${search},categoriaId=${categoriaId},autorId=${autorId},diretorId=${diretorId})}">
+                                    &laquo;
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${produtos.first} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:href="@{/admin/produtos(page=${produtos.number-1},size=${produtos.size},sort=${sort},search=${search},categoriaId=${categoriaId},autorId=${autorId},diretorId=${diretorId})}">
+                                    &lsaquo;
+                                </a>
+                            </li>
+                            <li th:each="i : ${#numbers.sequence(0, produtos.totalPages-1)}" 
+                                th:classappend="${i == produtos.number} ? 'active'" 
+                                class="page-item">
+                                <a class="page-link" 
+                                   th:href="@{/admin/produtos(page=${i},size=${produtos.size},sort=${sort},search=${search},categoriaId=${categoriaId},autorId=${autorId},diretorId=${diretorId})}"
+                                   th:text="${i+1}">
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${produtos.last} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:href="@{/admin/produtos(page=${produtos.number+1},size=${produtos.size},sort=${sort},search=${search},categoriaId=${categoriaId},autorId=${autorId},diretorId=${diretorId})}">
+                                    &rsaquo;
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${produtos.number == produtos.totalPages-1} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:href="@{/admin/produtos(page=${produtos.totalPages-1},size=${produtos.size},sort=${sort},search=${search},categoriaId=${categoriaId},autorId=${autorId},diretorId=${diretorId})}">
+                                    &raquo;
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+
+                <!-- Modal de confirmação de exclusão -->
+                <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalExcluirLabel">Confirmar Exclusão</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Tem certeza que deseja excluir este produto <strong id="nomeProduto"></strong>?</p>
+                                <p class="text-danger">Esta ação não pode ser desfeita!</p>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <form id="formExcluir" method="post" action="#">
+                                    <input type="hidden" name="_method" value="delete" />
+                                    <button type="submit" class="btn btn-danger" id="btnConfirmarExcluir">Excluir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script th:inline="javascript">
+                    // Função para preparar a exclusão
+                    function prepararExclusao(button) {
+                        const id = button.getAttribute('data-id');
+                        const nome = button.getAttribute('data-nome');
+
+
+                        // Define o nome do autor no modal
+                        document.getElementById('nomeProduto').textContent = nome;
+
+                        // Define a ação do formulário
+                        document.getElementById('formExcluir').action = '/admin/produtos/excluir/' + id;
+
+                        // Abre o modal
+                        new bootstrap.Modal(document.getElementById('modalExcluir')).show();
+                    }
+
+                    // Inicializa tooltips e configura botões de exclusão quando o DOM estiver pronto
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Inicializa tooltips
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                            return new bootstrap.Tooltip(tooltipTriggerEl);
+                        });
+
+                        // Adiciona evento de clique aos botões de exclusão
+                        document.querySelectorAll('.btn-excluir').forEach(function(button) {
+                            button.addEventListener('click', function() {
+                                prepararExclusao(this);
+                            });
+                        });
+                    });
+                </script>
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

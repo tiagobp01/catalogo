@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/categorias/base}">
+
+<head>
+    <title>Lista de Categorias | Admin</title>
+</head>
+
+<body>
+    <div layout:fragment="conteudo">
+        <!-- Filtros e busca -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/admin/categorias}" method="get" class="row g-3">
+                    <div class="col-md-8">
+                        <input type="text" name="search" th:value="${searchTerm}" class="form-control" 
+                               placeholder="Buscar por nome ou descrição...">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a th:href="@{/admin/categorias}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-sync-alt"></i> Limpar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabela de categorias -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    <a th:with="direction=${sortField == 'nome' ? (sortDirection == 'asc' ? 'desc' : 'asc') : 'asc'}"
+                                       th:href="@{/admin/categorias(size=${categorias.size}, page=0, sort='nome,' + ${direction}, search=${searchTerm})}">
+                                        Nome
+                                        <i th:if="${sortField == 'nome'}" 
+                                           th:class="${sortDirection == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></i>
+                                        <i th:unless="${sortField == 'nome'}" class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>Descrição</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${categorias.empty}">
+                                <td colspan="4" class="text-center">Nenhuma categoria encontrada.</td>
+                            </tr>
+                            <tr th:each="categoria : ${categorias}">
+                                <td th:text="${categoria.nome}">Nome da Categoria</td>
+                                <td>
+                                    <span th:if="${#strings.length(categoria.descricao) > 50}" 
+                                          th:attr="data-bs-toggle='tooltip'" 
+                                          th:data-bs-placement="top" 
+                                          th:title="${categoria.descricao}">
+                                        <span th:text="${#strings.abbreviate(categoria.descricao, 50)}">Descrição resumida...</span>
+                                    </span>
+                                    <span th:unless="${#strings.length(categoria.descricao) > 50}" th:text="${categoria.descricao}">
+                                        Descrição
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span th:if="${categoria.ativo}" class="badge bg-success">Ativo</span>
+                                    <span th:unless="${categoria.ativo}" class="badge bg-secondary">Inativo</span>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/admin/categorias/editar/} + ${categoria.id}" 
+                                       class="btn btn-sm btn-outline-primary me-1" 
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger btn-excluir" 
+                                            th:data-id="${categoria.id}"
+                                            th:data-nome="${categoria.nome}"
+                                            title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Paginação -->
+                <div th:if="${categorias.totalPages > 0}" class="mt-3">
+                    <nav aria-label="Navegação de páginas">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${categorias.first} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}"
+                                   th:href="@{/admin/categorias(size=${categorias.size}, page=0, sort=${sortParam}, search=${searchTerm})}">
+                                    Primeira
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${categorias.first} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}, prevPage=${categorias.number - 1}"
+                                   th:href="@{/admin/categorias(size=${categorias.size}, page=${prevPage}, sort=${sortParam}, search=${searchTerm})}">
+                                    Anterior
+                                </a>
+                            </li>
+                            
+                            <li th:each="page : ${#numbers.sequence(0, categorias.totalPages - 1)}" 
+                                class="page-item" 
+                                th:classappend="${page == categorias.number} ? 'active'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}"
+                                   th:href="@{/admin/categorias(size=${categorias.size}, page=${page}, sort=${sortParam}, search=${searchTerm})}"
+                                   th:text="${page + 1}">1</a>
+                            </li>
+                            
+                            <li class="page-item" th:classappend="${categorias.last} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}, nextPage=${categorias.number + 1}"
+                                   th:href="@{/admin/categorias(size=${categorias.size}, page=${nextPage}, sort=${sortParam}, search=${searchTerm})}">
+                                    Próxima
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${categorias.last} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:with="sortParam=${sortField + ',' + sortDirection}, lastPage=${categorias.totalPages - 1}"
+                                   th:href="@{/admin/categorias(size=${categorias.size}, page=${lastPage}, sort=${sortParam}, search=${searchTerm})}">
+                                    Última
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal de confirmação de exclusão -->
+        <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="modalExcluirLabel">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Tem certeza que deseja excluir a categoria <strong id="nomeCategoria"></strong>?</p>
+                        <p class="text-muted">Esta ação não pode ser desfeita.</p>
+                        <div id="produtosAssociados" class="alert alert-warning d-none">
+                            <strong>Atenção!</strong> Esta categoria está associada a produtos e não pode ser excluída.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form id="formExcluir" method="post" action="#">
+                            <input type="hidden" name="_method" value="delete" />
+
+                            <button type="submit" class="btn btn-danger" id="btnConfirmarExcluir">Excluir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/produtos/base}">
+
+<head>
+    <title th:text="${produto.id} ? 'Editar Produto' : 'Novo Produto'">Formulário de Produto</title>
+    <style>
+        .preview-imagem {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+        }
+        .imagem-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div layout:fragment="conteudo">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2" th:text="${produto.id} ? 'Editar Produto' : 'Novo Produto'">Formulário de Produto</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <a th:href="@{/admin/produtos}" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+
+        <form th:action="@{/admin/produtos/salvar}" th:object="${produto}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <input type="hidden" th:field="*{id}" />
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle"></i> Informações Básicas
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome do Produto <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nome" th:field="*{nome}" required>
+                                <div class="invalid-feedback">Por favor, informe o nome do produto.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="descricao" class="form-label">Descrição</label>
+                                <textarea class="form-control" id="descricao" th:field="*{descricao}" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="preco" class="form-label">Preço <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">R$</span>
+                                            <input type="number" class="form-control" id="preco" th:field="*{preco}" step="0.01" min="0" required>
+                                            <div class="invalid-feedback">Por favor, informe um preço válido.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="dataLancamento" class="form-label">Data de Lançamento <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="dataLancamento" name="dataLancamentoStr" 
+                                               th:value="${produto.dataLancamento != null} ? ${#temporals.format(produto.dataLancamento, 'yyyy-MM-dd')} : ''" 
+                                               required>
+                                        <input type="hidden" th:field="*{dataLancamento}" id="dataLancamentoHora" />
+                                        <div class="invalid-feedback">Por favor, informe a data de lançamento.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="ativo" th:field="*{ativo}">
+                                <label class="form-check-label" for="ativo">Produto ativo</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <!-- Imagem do Produto -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-image"></i> Imagem do Produto
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="imagem-container mb-3" style="min-height: 200px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa; border-radius: 4px;">
+                                <img th:if="${produto.foto != null && !produto.foto.isEmpty()}" 
+                                     th:src="${produto.foto}"
+                                     class="img-fluid preview-imagem" 
+                                     id="preview-imagem"
+                                     style="max-height: 200px; width: auto; display: block;"
+                                     alt="Prévia da imagem">
+                                <div th:if="${produto.foto == null || produto.foto.isEmpty()}" class="text-muted" id="sem-imagem">
+                                    <i class="fas fa-image fa-3x mb-2 d-block"></i>
+                                    Nenhuma imagem selecionada
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="imagem" class="form-label">Selecionar Imagem</label>
+                                <input class="form-control" type="file" id="imagem" name="imagem" accept="image/*" onchange="previewImagem(this)">
+                                <div class="form-text">Formatos aceitos: JPG, PNG. Tamanho máximo: 2MB</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Categoria, Autor e Diretor -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-tags"></i> Categorização
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
+                                <select class="form-select select2" id="categoria" th:field="*{categoria.id}" required>
+                                    <option value="">Selecione uma categoria</option>
+                                    <option th:each="categoria : ${categorias}" 
+                                            th:value="${categoria.id}" 
+                                            th:text="${categoria.nome}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback">Por favor, selecione uma categoria.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="autor" class="form-label">Autor <span class="text-danger">*</span></label>
+                                <select class="form-select select2" id="autor" th:field="*{autor.id}" required>
+                                    <option value="">Selecione um autor</option>
+                                    <option th:each="autor : ${autores}" 
+                                            th:value="${autor.id}" 
+                                            th:text="${autor.nome}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback">Por favor, selecione um autor.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="diretor" class="form-label">Diretor <span class="text-danger">*</span></label>
+                                <select class="form-select select2" id="diretor" th:field="*{diretor.id}" required>
+                                    <option value="">Selecione um diretor</option>
+                                    <option th:each="diretor : ${diretores}" 
+                                            th:value="${diretor.id}" 
+                                            th:text="${diretor.nome}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback">Por favor, selecione um diretor.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a th:href="@{/admin/produtos}" class="btn btn-secondary me-md-2">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+            // Inicialização dos selects com busca
+            $(document).ready(function() {
+                $('.select2').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    placeholder: 'Selecione uma opção',
+                    allowClear: true
+                });
+                
+                // Formatação da data para o input date
+                const dataLancamento = document.getElementById('dataLancamento');
+                if (dataLancamento && !dataLancamento.value) {
+                    const hoje = new Date().toISOString().split('T')[0];
+                    dataLancamento.value = hoje;
+                }
+                
+                // Mostrar preview da imagem existente
+                const previewImagem = document.getElementById('preview-imagem');
+                if (previewImagem) {
+                    previewImagem.style.display = 'block';
+                }
+            });
+            
+            // Função para pré-visualizar a imagem selecionada
+            function previewImagem(input) {
+                const preview = document.getElementById('preview-imagem');
+                const semImagem = document.getElementById('sem-imagem');
+                
+                if (input.files && input.files[0]) {
+                    const file = input.files[0];
+                    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    
+                    if (!validImageTypes.includes(file.type)) {
+                        alert('Por favor, selecione um arquivo de imagem válido (JPEG, PNG, GIF, WebP).');
+                        input.value = '';
+                        return;
+                    }
+                    
+                    if (file.size > 2 * 1024 * 1024) { // 2MB
+                        alert('A imagem não pode ser maior que 2MB.');
+                        input.value = '';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        if (!preview) {
+                            // Se não existir o elemento de preview, cria um novo
+                            const img = document.createElement('img');
+                            img.id = 'preview-imagem';
+                            img.className = 'img-fluid preview-imagem';
+                            img.alt = 'Prévia da imagem';
+                            img.src = e.target.result;
+                            img.style.maxHeight = '200px';
+                            img.style.width = 'auto';
+                            img.style.display = 'block';
+                            
+                            if (semImagem) {
+                                semImagem.style.display = 'none';
+                            }
+                            
+                            const container = document.querySelector('.imagem-container');
+                            container.insertBefore(img, container.firstChild);
+                        } else {
+                            // Se existir, apenas atualiza o src
+                            preview.src = e.target.result;
+                            preview.style.display = 'block';
+                            
+                            if (semImagem) {
+                                semImagem.style.display = 'none';
+                            }
+                        }
+                    };
+                    
+                    reader.onerror = function() {
+                        alert('Ocorreu um erro ao carregar a imagem.');
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+            
+            // Formatar a data antes do envio do formulário
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const dataInput = document.getElementById('dataLancamento');
+                const dataHoraInput = document.getElementById('dataLancamentoHora');
+                
+                if (dataInput && dataInput.value) {
+                    // Adiciona a hora atual à data para criar um LocalDateTime válido
+                    const dataComHora = dataInput.value + 'T00:00:00';
+                    dataHoraInput.value = dataComHora;
+                }
+                
+                // Continua com a validação normal do formulário
+                if (!this.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                
+                this.classList.add('was-validated');
+            });
+            
+            // Validação do formulário
+            (function () {
+                'use strict'
+                
+                // Busca todos os formulários que precisam de validação
+                var forms = document.querySelectorAll('.needs-validation')
+                
+                // Loop sobre eles e previne envio
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+        </script>
+    </th:block>
+</body>
+</html>

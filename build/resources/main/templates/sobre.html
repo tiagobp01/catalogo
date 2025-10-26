@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+<head>
+    <title>Sobre o Catálogo</title>
+    <th:block th:fragment="styles">
+        <style>
+            .about-section {
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                padding: 3rem 2rem;
+                margin-bottom: 2rem;
+            }
+            .feature-card {
+                border: none;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease;
+                height: 100%;
+            }
+            .feature-card:hover {
+                transform: translateY(-5px);
+            }
+            .feature-icon {
+                font-size: 2.5rem;
+                color: var(--unicsul-blue);
+                margin-bottom: 1.5rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Hero Section -->
+        <section class="hero-section text-center mb-5">
+            <div class="container">
+                <h1 class="display-4 fw-bold mb-4">Sobre o Catálogo</h1>
+                <p class="lead">Conheça mais sobre nossa plataforma de gerenciamento de produtos</p>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about-section mb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <h2 class="h3 mb-4">Bem-vindo ao Catálogo Online</h2>
+                        <p class="lead mb-4">
+                            Nosso sistema de catálogo foi desenvolvido para ajudar você a gerenciar e encontrar produtos de forma simples e eficiente.
+                            Com uma interface intuitiva e recursos poderosos, facilitamos o cadastro, organização e busca de itens do seu acervo.
+                        </p>
+                        
+                        <div class="row mt-5">
+                            <div class="col-md-4 mb-4">
+                                <div class="card feature-card h-100 p-4">
+                                    <div class="card-body text-center">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-boxes"></i>
+                                        </div>
+                                        <h3 class="h5 mb-3">Cadastro de Produtos</h3>
+                                        <p class="text-muted">
+                                            Cadastre facilmente novos produtos, incluindo informações detalhadas como nome, descrição, categoria, autor e preço.
+                                            Mantenha seu catálogo sempre atualizado.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-4">
+                                <div class="card feature-card h-100 p-4">
+                                    <div class="card-body text-center">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                        <h3 class="h5 mb-3">Busca Avançada</h3>
+                                        <p class="text-muted">
+                                            Encontre exatamente o que procura com nosso sistema de busca avançada. Filtre por categoria, autor,
+                                            preço e muito mais para localizar produtos rapidamente.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-4">
+                                <div class="card feature-card h-100 p-4">
+                                    <div class="card-body text-center">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-tags"></i>
+                                        </div>
+                                        <h3 class="h5 mb-3">Organização por Categorias</h3>
+                                        <p class="text-muted">
+                                            Mantenha seus produtos organizados em categorias personalizáveis. Crie, edite e gerencie categorias
+                                            para facilitar a navegação e localização de itens.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border-0 bg-light p-4">
+                                    <h3 class="h5 mb-3">Como começar</h3>
+                                    <ol class="mb-0">
+                                        <li class="mb-2">Cadastre as categorias dos seus produtos</li>
+                                        <li class="mb-2">Adicione os produtos com suas informações completas</li>
+                                        <li>Utilize a barra de busca para encontrar rapidamente qualquer item</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Call to Action -->
+        <section class="text-center py-5 bg-light">
+            <div class="container">
+                <h2 class="h3 mb-4">Pronto para começar?</h2>
+                <p class="lead mb-4">Cadastre seus produtos agora mesmo e aproveite todos os recursos do nosso catálogo.</p>
+                <a th:href="@{/}" class="btn btn-primary btn-lg px-4 me-2">
+                    <i class="fas fa-home me-2"></i>Página Inicial
+                </a>
+                <a th:href="@{/admin}" class="btn btn-outline-primary btn-lg px-4" th:if="${isAdmin}">
+                    <i class="fas fa-cog me-2"></i>Área Administrativa
+                </a>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+:root {
+    --unicsul-blue: #003366;
+    --unicsul-light-blue: #0066cc;
+    --unicsul-yellow: #ffcc00;
+    --unicsul-gray: #f8f9fa;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+}
+
+/* Header */
+.bg-unicsul-blue {
+    background-color: var(--unicsul-blue) !important;
+}
+
+/* Category Cards */
+.category-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 100%;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.category-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--unicsul-light-blue);
+}
+
+/* Search Bar */
+.search-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Buttons */
+.btn-unicsul {
+    background-color: var(--unicsul-light-blue);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 500;
+}
+
+.btn-unicsul:hover {
+    background-color: var(--unicsul-blue);
+    color: white;
+}
+
+/* Product Card */
+.product-card {
+    transition: transform 0.3s ease;
+    margin-bottom: 1.5rem;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-price {
+    color: var(--unicsul-light-blue);
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .search-container {
+        padding: 1rem;
+    }
+    
+    .category-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: none;
+    width: 2rem;
+    height: 2rem;
+    border: 0.25rem solid rgba(0, 102, 204, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--unicsul-light-blue);
+    animation: spin 1s ease-in-out infinite;
+    margin: 1rem auto;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
