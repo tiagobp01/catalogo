@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+<head>
+    <title>Produtos</title>
+    <th:block th:fragment="styles">
+        <style>
+            .empty-state {
+                text-align: center;
+                padding: 3rem 0;
+                color: #6c757d;
+            }
+            .empty-state i {
+                font-size: 4rem;
+                margin-bottom: 1rem;
+                color: #dee2e6;
+            }
+            .card {
+                transition: transform 0.2s, box-shadow 0.2s;
+                height: 100%;
+            }
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            }
+            .card-img-top {
+                height: 200px;
+                object-fit: cover;
+            }
+            .card-title {
+                color: #0d6efd;
+            }
+            .card-text {
+                color: #6c757d;
+            }
+            .price {
+                font-weight: bold;
+                color: #198754;
+                font-size: 1.25rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Início</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${categoria.nome}">Categoria</li>
+                </ol>
+            </nav>
+
+            <!-- Título da Categoria -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0" th:text="'Produtos - ' + ${categoria.nome}">Produtos</h2>
+                <span class="badge bg-primary" th:text="${#lists.size(produtos)} + ' itens'"></span>
+            </div>
+
+            <!-- Lista de Produtos -->
+            <div th:if="${not #lists.isEmpty(produtos)}" class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col mb-4" th:each="produto : ${produtos}">
+                    <div class="card h-100">
+                        <a th:href="@{/produto/detalhes/__${produto.id}__}" class="text-decoration-none text-dark">
+                            <div th:if="${produto.foto != null && !produto.foto.isEmpty()}" class="card-img-container" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                <img th:src="${produto.foto.startsWith('data:image/') ? produto.foto : ('data:image/png;base64,' + produto.foto)}"
+                                     class="img-fluid" alt="Imagem do produto"
+                                     style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                                     onerror="this.onerror=null; this.src='/images/placeholder.png'" />
+                            </div>
+                            <div th:unless="${produto.foto != null && !produto.foto.isEmpty()}" class="card-img-container" style="height: 200px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                <img src="/images/placeholder.png" class="img-fluid" alt="Sem imagem" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${produto.nome}">Nome do Produto</h5>
+                                <p class="card-text text-truncate-3" th:if="${produto.descricao}" th:text="${produto.descricao}">
+                                    Descrição do produto aqui.
+                                </p>
+                                <div class="mt-3">
+                                    <span class="price fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 2, 'POINT')}">R$ 0,00</span>
+                                    <p class="text-muted small mt-2 mb-0">Clique para ver detalhes</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado vazio -->
+            <div th:if="${#lists.isEmpty(produtos)}" class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <h3>;( que pena, não temos produtos nesta categoria</h3>
+                <p class="text-muted">Volte mais tarde para conferir nossas novidades!</p>
+                <a th:href="@{/}" class="btn btn-primary mt-3">
+                    <i class="fas fa-arrow-left me-1"></i> Voltar para a página inicial
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            // Scripts específicos da página podem ser adicionados aqui
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Página de produtos carregada!');
+            });
+        </script>
+    </th:block>
+</body>
+</html>

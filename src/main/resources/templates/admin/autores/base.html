@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title th:with="title=${pageTitle} ?: 'Autores'" th:text="${title} + ' | Admin'">Autores | Admin</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2" th:text="${pageTitle}">Autores</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <a th:href="@{/admin/autores/novo}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-plus"></i> Novo Autor
+                </a>
+            </div>
+        </div>
+
+        <!-- Mensagens de sucesso/erro -->
+        <div th:if="${mensagemSucesso != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${mensagemSucesso}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        
+        <div th:if="${mensagemErro != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${mensagemErro}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+
+        <!-- Conteúdo específico de cada página -->
+        <div layout:fragment="conteudo">
+            <!-- O conteúdo específico de cada página será inserido aqui -->
+        </div>
+    </div>
+</body>
+</html>

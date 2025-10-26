@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Cadastro - Catálogo Virtual</title>
+    <th:block layout:fragment="styles">
+        <style>
+            body {
+                background-color: #f8f9fa;
+            }
+            .register-container {
+                max-width: 600px;
+                margin: 2rem auto;
+                padding: 2rem;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            }
+            .form-control:focus {
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+            .btn-register {
+                padding: 0.75rem 2rem;
+                font-size: 1.1rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="register-container">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                        <h2 class="h3">Criar uma nova conta</h2>
+                        <p class="text-muted">Preencha o formulário abaixo para se cadastrar</p>
+                    </div>
+                    
+                    <!-- Mensagens de feedback -->
+                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+                    
+                    <form th:action="@{/cadastro}" th:object="${usuario}" method="post" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="nome" class="form-label">Nome Completo <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nome" th:field="*{nome}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                <label for="email" class="form-label">E-mail <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="senha" class="form-label">Senha <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control" id="senha" th:field="*{senha}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="confirmacaoSenha" class="form-label">Confirme a Senha <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control" id="confirmacaoSenha" th:field="*{confirmacaoSenha}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmacaoSenha')}" th:errors="*{confirmacaoSenha}"></div>
+                            </div>
+                        </div>
+{{ ... }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-register">
+                                <i class="fas fa-user-plus me-2"></i> Cadastrar
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <p class="mb-0">
+                                Já tem uma conta? 
+                                <a th:href="@{/login}" class="text-decoration-none">Faça login aqui</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a th:href="@{/}" class="text-decoration-none">
+                        <i class="fas fa-arrow-left me-1"></i> Voltar para a página inicial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Validação do formulário -->
+    <script>
+        // Exemplo de validação do lado do cliente
+        (function () {
+            'use strict'
+            
+            // Busca todos os formulários que precisam de validação
+            var forms = document.querySelectorAll('.needs-validation')
+            
+            // Loop sobre os formulários e previne o envio
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+</div>
+</body>
+</html>

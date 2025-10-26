@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Detalhes do Contato</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0"><i class="fas fa-address-card me-2"></i>Detalhes do Contato</h1>
+            <a th:href="@{/admin/contatos}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Voltar
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Informações do Contato</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th class="w-25">Nome:</th>
+                                <td th:text="${contato.nome}"></td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td>
+                                    <a th:href="'mailto:' + ${contato.email}" class="text-decoration-none">
+                                        <i class="fas fa-envelope me-1"></i> 
+                                        <span th:text="${contato.email}"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${contato.ddd != null and contato.telefone != null}">
+                                <th>Telefone:</th>
+                                <td>
+                                    <a th:with="formattedPhone=${contato.telefone != null ? (contato.telefone.length() > 4 ? contato.telefone.substring(0, contato.telefone.length()-4) + '-' + contato.telefone.substring(contato.telefone.length()-4) : contato.telefone) : ''}"
+                                       th:href="'tel:+55' + ${contato.ddd} + ${contato.telefone}" 
+                                       class="text-decoration-none">
+                                        <i class="fas fa-phone me-1"></i> 
+                                        ([[${contato.ddd}]]) [[${formattedPhone}]]
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Data de Envio:</th>
+                                <td th:text="${#temporals.format(contato.dataEnvio, 'dd/MM/yyyy HH:mm')}"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h5>Mensagem</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="mb-0" th:text="${contato.mensagem}"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a th:href="@{/admin/contatos}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Voltar para a lista
+                    </a>
+                    <a th:href="'mailto:' + ${contato.email} + '?subject=Resposta ao contato de ' + ${contato.nome}" 
+                       class="btn btn-primary">
+                        <i class="fas fa-reply me-1"></i> Responder
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

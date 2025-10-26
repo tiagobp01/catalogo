@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+<head>
+    <title th:text="${pageTitle}">Resultados da Busca</title>
+    <th:block th:fragment="styles">
+        <style>
+            .empty-state {
+                text-align: center;
+                padding: 3rem 0;
+                color: #6c757d;
+            }
+            .empty-state i {
+                font-size: 4rem;
+                margin-bottom: 1rem;
+                color: #dee2e6;
+            }
+            .card {
+                transition: transform 0.2s, box-shadow 0.2s;
+                height: 100%;
+            }
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            }
+            .card-img-top {
+                height: 200px;
+                object-fit: cover;
+            }
+            .card-title {
+                color: #0d6efd;
+            }
+            .card-text {
+                color: #6c757d;
+            }
+            .price {
+                font-weight: bold;
+                color: #198754;
+                font-size: 1.25rem;
+            }
+            .pagination {
+                justify-content: center;
+                margin-top: 2rem;
+            }
+            .page-size-selector {
+                max-width: 100px;
+                display: inline-block;
+                margin-left: 1rem;
+            }
+            .search-header {
+                margin-bottom: 2rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Início</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Busca</li>
+                </ol>
+            </nav>
+
+            <!-- Search Header -->
+            <div class="search-box mb-4">
+                <form th:action="@{/produto/buscar}" method="get" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               name="termo" 
+                               th:value="${searchTerm}"
+                               placeholder="Buscar por título, autor ou descrição..." 
+                               aria-label="Buscar"
+                               required>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="search-header">
+                <h2>Resultados da busca por: <span th:text="${searchTerm}"></span></h2>
+                <p th:if="${totalItems > 0}" class="text-muted">
+                    <span th:text="${totalItems}"></span> resultado(s) encontrado(s)
+                </p>
+            </div>
+
+            <!-- Results -->
+            <div th:if="${!produtos.empty}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+                <div th:each="produto : ${produtos}" class="col">
+                    <div class="card h-100">
+                        <img th:if="${produto.foto != null}" th:src="${produto.foto}" class="card-img-top" alt="Imagem do produto">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title" th:text="${produto.nome}"></h5>
+                            <p class="card-text flex-grow-1" th:text="${produto.descricao != null && !produto.descricao.isEmpty() ? produto.descricao : 'Sem descrição'}"></p>
+                            <div class="mt-auto">
+                                <p class="price mb-2" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 2, 'COMMA')}"></p>
+                                <a th:href="@{/produto/detalhes/{id}(id=${produto.id})}" class="btn btn-primary w-100">
+                                    Ver Detalhes
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Results -->
+            <div th:if="${produtos.empty}" class="empty-state">
+                <i class="bi bi-search"></i>
+                <h3>Nenhum resultado encontrado</h3>
+                <p>Não encontramos nenhum produto que corresponda à sua busca.</p>
+                <a th:href="@{/}" class="btn btn-primary mt-3">Voltar para a página inicial</a>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}" class="d-flex justify-content-between align-items-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link" th:href="@{/produto/buscar(q=${searchTerm}, page=${currentPage - 1}, size=${pageSize})}" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                            th:class="'page-item' + (${i} == ${currentPage} ? ' active' : '')">
+                            <a class="page-link" 
+                               th:href="@{/produto/buscar(q=${searchTerm}, page=${i}, size=${pageSize})}" 
+                               th:text="${i + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/produto/buscar(q=${searchTerm}, page=${currentPage + 1}, size=${pageSize})}" aria-label="Próximo">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <!-- Items per page selector -->
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Itens por página:</span>
+                    <select class="form-select page-size-selector" onchange="updatePageSize(this.value)">
+                        <option value="5" th:selected="${pageSize == 5}">5</option>
+                        <option value="20" th:selected="${pageSize == 20}">20</option>
+                        <option value="50" th:selected="${pageSize == 50}">50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+            function updatePageSize(size) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('size', size);
+                // Reset to first page when changing page size
+                url.searchParams.set('page', '0');
+                window.location.href = url.toString();
+            }
+        </script>
+    </th:block>
+</body>
+</html>

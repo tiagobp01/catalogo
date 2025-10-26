@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Produtos - Painel Administrativo</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Conteúdo específico de cada página será inserido aqui -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        <div layout:fragment="conteudo"></div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <!-- Scripts específicos de cada página serão inseridos aqui -->
+        <script th:src="@{/js/admin/produtos.js}"></script>
+    </th:block>
+</body>
+</html>
